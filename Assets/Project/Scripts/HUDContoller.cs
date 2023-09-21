@@ -414,7 +414,7 @@ public class HUDContoller : MonoBehaviour
         }
 
         // Recuperar salud
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             if (playerData.raciones > 0 && playerData.vida < playerData.vidaMax)
             {
@@ -428,7 +428,7 @@ public class HUDContoller : MonoBehaviour
         }
 
         // Daño
-        if (Input.GetKeyDown(KeyCode.K))
+        if (Input.GetKeyDown(KeyCode.M))
         {
             Damage();
             ShowVida();
