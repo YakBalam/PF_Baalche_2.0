@@ -47,11 +47,14 @@ public class HUDContoller : MonoBehaviour
 
     public TextMeshProUGUI racionesText;
 
+    public bool menuPower;
+
     void Start()
     {
         CargaDatos();
         CleanPanels();
         ShowHUD();        
+        menuPower = false;
         
         // Menu de Pausa
         continuarButton.onClick.AddListener(ShowHUD);
@@ -400,6 +403,7 @@ public class HUDContoller : MonoBehaviour
         // Menu Pausa
         if(Input.GetKeyDown(KeyCode.P))
         {
+            SoundFxManager.Instance.ShowMenuPausa();
             ShowPausa();
         }
 
@@ -407,10 +411,16 @@ public class HUDContoller : MonoBehaviour
         if(Input.GetKey(KeyCode.Q))
         {
             ShowMenuPoder();
+            if(menuPower==false)
+            {
+                menuPower = true;
+                SoundFxManager.Instance.ShowMenuPower();
+            }
         }
         else
         {
             QuitMenuPoder();
+            menuPower = false;
         }
 
         // Recuperar salud
