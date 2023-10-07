@@ -1,15 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 using static UnityEditor.Rendering.InspectorCurveEditor;
 
 public class CoyoteController : MonoBehaviour
 {
     public Vector2 destinationArea;
     public Rigidbody coyoteRigidBody;
+    public GameObject hocico;
+    public Image barraVida;
 
     private Animator enemyController;
     private NavMeshAgent agent;
@@ -37,6 +41,13 @@ public class CoyoteController : MonoBehaviour
     private float speedChase = 6f;
     private float speedRunAttack = 7f;
 
+    private float vidaMax = 100;
+    private float vidaActual;
+    private float damageMacheteL;
+    private float damageMacheteP;
+
+    private bool damageFlag;
+    private bool muerteFlag;
     private bool banderaEstado = false;
 
     void Start()
@@ -44,10 +55,36 @@ public class CoyoteController : MonoBehaviour
         enemyController = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         playerTransform = GameObject.FindWithTag("Player").transform;
+        muerteFlag = false;
+        damageFlag = false;
+        vidaActual = vidaMax;
+        barraVida.fillAmount = 1;
+        damageMacheteL = 8f;
+        damageMacheteP = 12f;
 
         currentState = CoyoteState.NONE;
         ChangeState(CoyoteState.PATROL);
         //ChangeState(CoyoteState.TEST);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "MacheteLigero")
+        {
+            vidaActual -= damageMacheteL;
+            damageFlag = true;
+            Debug.Log("Coyote: " + vidaActual);
+            Debug.Log("Ligero.");
+            barraVida.fillAmount -= damageMacheteL / vidaMax;
+        }
+        else if (other.gameObject.tag == "MachetePesado")
+        {
+            vidaActual -= damageMacheteL;
+            damageFlag = true;
+            Debug.Log("Coyote: " + vidaActual);
+            Debug.Log("Pesado.");
+            barraVida.fillAmount -= damageMacheteP / vidaMax;
+        }
     }
 
     void ChangeState(CoyoteState newState)
@@ -72,8 +109,11 @@ public class CoyoteController : MonoBehaviour
                 StartCoroutine("UpdatePlayerDestination");
                 break;
             case CoyoteState.IDLEATTACK:
-                if(currentState == CoyoteState.RUNATTACK)
+                if (currentState == CoyoteState.RUNATTACK)
+                {
                     StopCoroutine("UpdatePlayerDestination");
+                    agent.SetDestination(transform.position);
+                }
                 currentState = newState;
                 StartCoroutine("SeePlayer");
                 break;
@@ -100,11 +140,14 @@ public class CoyoteController : MonoBehaviour
                 currentState = newState;
                 break;
             case CoyoteState.DAMAGE:
+                StopAllCoroutines();
+                currentState = newState;
                 break;
             case CoyoteState.DEATH:
+                currentState = newState;
                 break;
             case CoyoteState.TEST:
-                StartCoroutine("SeePlayer");
+                //StartCoroutine("SeePlayer");
                 break;
         }
     }
@@ -158,6 +201,15 @@ public class CoyoteController : MonoBehaviour
         return puntoEscape;        
     }
 
+    public void EnableColliderHocico()
+    {
+        hocico.GetComponent<CapsuleCollider>().enabled = true;
+    }
+
+    public void DisableColliderHocico()
+    {
+        hocico.GetComponent<CapsuleCollider>().enabled = false;
+    }
 
     void FixedUpdate()
     {
@@ -178,6 +230,13 @@ public class CoyoteController : MonoBehaviour
                     enemyController.SetBool("correr", false);
                 }
                 sqDistance2Player = (playerTransform.position - transform.position).sqrMagnitude;
+                if (vidaActual <= 0)
+                    ChangeState(CoyoteState.DEATH);
+                if (damageFlag == true)
+                {
+                    damageFlag = false;
+                    ChangeState(CoyoteState.DAMAGE);
+                }
                 if (sqDistance2Player <= distancePatrol2Chase * distancePatrol2Chase)
                 {
                     banderaEstado = false;
@@ -200,7 +259,13 @@ public class CoyoteController : MonoBehaviour
                 }
 
                 sqDistance2Player = (playerTransform.position - transform.position).sqrMagnitude;
-
+                if (vidaActual <= 0)
+                    ChangeState(CoyoteState.DEATH);
+                if (damageFlag == true)
+                {
+                    damageFlag = false;
+                    ChangeState(CoyoteState.DAMAGE);
+                }
                 if (sqDistance2Player > distancePatrol2Chase * distancePatrol2Chase)
                 {
                     banderaEstado = false;
@@ -217,7 +282,7 @@ public class CoyoteController : MonoBehaviour
                 {
                     banderaEstado = true;
                     Debug.Log("IDLE ATTACK");
-                    agent.SetDestination(transform.position);
+                    //agent.SetDestination(transform.position);
                 }
                 if (agent.speed != speedIdle)
                 {
@@ -226,6 +291,13 @@ public class CoyoteController : MonoBehaviour
                 timeIdle -= Time.fixedDeltaTime;
 
                 sqDistance2Player = (playerTransform.position - transform.position).sqrMagnitude;
+                if (vidaActual <= 0)
+                    ChangeState(CoyoteState.DEATH);
+                if (damageFlag == true)
+                {
+                    damageFlag = false;
+                    ChangeState(CoyoteState.DAMAGE);
+                }
                 if (sqDistance2Player > distanceIdle2Chase * distanceIdle2Chase)
                 {
                     agent.speed = speedChase;
@@ -262,6 +334,13 @@ public class CoyoteController : MonoBehaviour
                 }
 
                 sqDistance2Player = (playerTransform.position - transform.position).sqrMagnitude;
+                if (vidaActual <= 0)
+                    ChangeState(CoyoteState.DEATH);
+                if (damageFlag == true)
+                {
+                    damageFlag = false;
+                    ChangeState(CoyoteState.DAMAGE);
+                }
                 if (sqDistance2Player <= distanceRun2Attack * distanceRun2Attack)
                 {
                     banderaEstado = false;
@@ -282,6 +361,13 @@ public class CoyoteController : MonoBehaviour
                 {
                     banderaEstado = true;
                     Debug.Log("ATTACK");
+                }
+                if (vidaActual <= 0)
+                    ChangeState(CoyoteState.DEATH);
+                if (damageFlag == true)
+                {
+                    damageFlag = false;
+                    ChangeState(CoyoteState.DAMAGE);
                 }
 
                 if (agent.speed == speedChase)
@@ -321,6 +407,13 @@ public class CoyoteController : MonoBehaviour
                 {
                     agent.speed = speedChase;
                 }
+                if (vidaActual <= 0)
+                    ChangeState(CoyoteState.DEATH);
+                if (damageFlag == true)
+                {
+                    damageFlag = false;
+                    ChangeState(CoyoteState.DAMAGE);
+                }
 
                 agent.SetDestination(escapePoint);
                 timeEscape -= Time.fixedDeltaTime;
@@ -337,8 +430,24 @@ public class CoyoteController : MonoBehaviour
                 //Debug.Log("timeEscape: " + timeEscape);
                 break;
             case CoyoteState.DAMAGE:
+                enemyController.SetTrigger("damage");
+                if (vidaActual <= 0f)
+                {
+                    ChangeState(CoyoteState.DEATH);
+                }
+                else
+                {
+                    ChangeState(CoyoteState.IDLEATTACK);
+                }
                 break;
             case CoyoteState.DEATH:
+                if (muerteFlag == false)
+                {
+                    muerteFlag = true;
+                    Debug.Log("Muerte");
+                    enemyController.SetTrigger("die");
+                    Destroy(gameObject, 10f);
+                }
                 break;
 
             case CoyoteState.TEST:

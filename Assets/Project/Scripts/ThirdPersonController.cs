@@ -5,15 +5,56 @@ using Cinemachine;
 
 public class ThirdPersonController : MonoBehaviour
 {
-
+    public PlayerData playerData;
     private Animator playerAnimator;
     public CinemachineFreeLook camara;
+    public GameObject machete;
 
+    private bool flagDeath;
+
+    private float timeMachete;
 
     void Start()
     {
         playerAnimator = GetComponent<Animator>();
         playerAnimator.SetBool("rapido", false);
+        timeMachete = 0f;
+        machete.SetActive(false);
+        flagDeath = false;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "HitEnemy" && flagDeath == false)
+        {
+            playerAnimator.SetTrigger("damage");
+            Debug.Log("Flag_1");
+            Transform golpeTransform = other.GetComponent<Transform>();
+            GameObject enemy;
+            if (golpeTransform != null && golpeTransform.parent.parent != null)
+            {
+                Debug.Log("Flag_2");
+                enemy = golpeTransform.parent.parent.gameObject;
+                string enemyTag = enemy.tag;
+
+                // Solo se recibira daño si el atacante es el jugador
+                if (enemyTag == "Coyote")
+                {
+                    Debug.Log("Flag_3");
+                    if (playerData.vida - 16f < 0)
+                    {
+                        playerData.vida = 0f;
+                        flagDeath = true;
+                        playerAnimator.SetBool("death", true);
+                    }
+                    else
+                    {
+                        playerData.vida -= 16f;
+                    }
+                }
+            }
+
+        }
     }
 
     // Update is called once per frame
@@ -28,12 +69,20 @@ public class ThirdPersonController : MonoBehaviour
                 // Golpe ligero
                 if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
+                    machete.tag = "MacheteLigero";
+                    timeMachete = 15f;
+                    if (!machete.activeSelf)
+                        machete.SetActive(true);
                     playerAnimator.SetTrigger("golpeLigero");
                 }
 
                 // Golpe pesado
                 if (Input.GetKeyDown(KeyCode.Mouse1))
                 {
+                    machete.tag = "MachetePesado";
+                    timeMachete = 15f;
+                    if (!machete.activeSelf)
+                        machete.SetActive(true);
                     playerAnimator.SetTrigger("golpePesado");
                 }
             }
@@ -104,8 +153,23 @@ public class ThirdPersonController : MonoBehaviour
                 playerAnimator.SetTrigger("saltar");
             }
         }
-        
+
+        // Si pasan 15 segundos sin atacar con el machete, este desaparecera
+        if (timeMachete > 0)
+            timeMachete-= Time.deltaTime;
+        else if (machete.activeSelf)
+            machete.SetActive(false);
 
 
+    }
+
+    public void EnableColliderMachete()
+    {
+        machete.GetComponent<CapsuleCollider>().enabled = true;
+    }
+
+    public void DisableColliderMachete()
+    {
+        machete.GetComponent<CapsuleCollider>().enabled = false;
     }
 }

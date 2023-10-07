@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vidas: 5
   nivelMax: 2
-  raciones: 5
-  racionesMax: 8
+  raciones: 3
+  racionesMax: 5
   poderActivo: 0
-  vida: 80
-  vidaMax: 100
+  vida: 0
+  vidaMax: 200
   racion: 20
   ataqueLigero: 10
   ataquePesado: 15

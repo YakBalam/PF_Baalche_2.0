@@ -444,6 +444,8 @@ public class HUDContoller : MonoBehaviour
             ShowVida();
         }
 
+        ShowVida();
+
 
 
     }

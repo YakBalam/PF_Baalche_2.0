@@ -2,23 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GolpeLigeroBehaviour : StateMachineBehaviour
+public class CoyoteAttackBehaviour : StateMachineBehaviour
 {
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // Activacion del collider del Machete
-        animator.GetComponent<ThirdPersonController>().EnableColliderMachete();
-
-        // Reproduccion de sonido (del machete) al atacar
-        if (animator.GetBool("rapido") == false)
-        {
-            SoundFxManager.Instance.NohekAttackLigero();
-        }
-        else
-        {
-            SoundFxManager.Instance.NohekAttackLigeroFast();
-        }
+        animator.GetComponent<CoyoteController>().EnableColliderHocico();
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -30,8 +19,7 @@ public class GolpeLigeroBehaviour : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // Desactivacion del collider del Machete
-        animator.GetComponent<ThirdPersonController>().DisableColliderMachete();
+        animator.GetComponent<CoyoteController>().DisableColliderHocico();
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
