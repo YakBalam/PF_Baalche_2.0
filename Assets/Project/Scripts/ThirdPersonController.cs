@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using System;
 
 public class ThirdPersonController : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public class ThirdPersonController : MonoBehaviour
     private Animator playerAnimator;
     public CinemachineFreeLook camara;
     public GameObject machete;
+
+    public GameObject mainPausaPanel;
+    public GameObject mainPoderPanel;
 
     private GameObject item;
     private bool flagDeath;
@@ -79,10 +83,10 @@ public class ThirdPersonController : MonoBehaviour
     void Update()
     {
         // Cuando esta en Play puede hacer todas las acciones
-        if(Time.timeScale>0)
+        if(mainPausaPanel.activeSelf == false)
         {
             // Solo cuando no este activo el menu de Poderes podra golpear
-            if(Time.timeScale > .5f)
+            if(mainPoderPanel.activeSelf == false)
             {
                 // Golpe ligero
                 if (Input.GetKeyDown(KeyCode.Mouse0))

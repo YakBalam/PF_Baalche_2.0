@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 public class HUDContoller : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class HUDContoller : MonoBehaviour
     public GameObject pausaPanel;
     public GameObject optionsPanel;
     public GameObject advertenciaPanel;
+    public GameObject sonidoPanel;
     public GameObject controlesPanel;
 
     public Image vida;
@@ -32,6 +34,11 @@ public class HUDContoller : MonoBehaviour
     public Button videoButton;
     public Button controlesButton;
 
+    public Button regresarFromSonidoButton;
+    public Slider musicSlider;
+    public Slider sFxSlider;
+    public Slider ambientalSlider;
+
     public Button regresarFromControlesButton;
 
     public Button siFromAdvertenciaButton;
@@ -47,7 +54,13 @@ public class HUDContoller : MonoBehaviour
 
     public TextMeshProUGUI racionesText;
 
+    public AudioMixer mainAudioMixer;
+
     public bool menuPower;
+
+    private float currentMusicVolume;
+    private float currentSFxVolume;
+    private float currentAmbientalVolume;
 
     void Start()
     {
@@ -63,9 +76,18 @@ public class HUDContoller : MonoBehaviour
 
         // Menu de Opciones
         regresarFromOpcionesButton.onClick.AddListener(QuitOpciones);
-        //boton de Sonido
+        sonidoButton.onClick.AddListener(ShowSonido);
         //boton de Video
         controlesButton.onClick.AddListener(ShowControles);
+
+        //Menu Sonido
+        regresarFromSonidoButton.onClick.AddListener(QuitSonido);
+        if(mainAudioMixer.GetFloat("musicVolume", out currentMusicVolume))
+            musicSlider.value = currentMusicVolume;
+        if (mainAudioMixer.GetFloat("SFxVolume", out currentSFxVolume))
+            sFxSlider.value = currentSFxVolume;
+        if (mainAudioMixer.GetFloat("ambientalVolume", out currentAmbientalVolume))
+            ambientalSlider.value = currentAmbientalVolume;
 
         //Menu de Controles
         regresarFromControlesButton.onClick.AddListener(QuitControles);
@@ -280,6 +302,7 @@ public class HUDContoller : MonoBehaviour
     {
         menuPoderPanel.SetActive(false);
         GetPoderActivo();
+
     }
 
     void DisablePoderes()
@@ -366,6 +389,31 @@ public class HUDContoller : MonoBehaviour
         optionsPanel.SetActive(false);
     }
 
+    void ShowSonido()
+    {
+        sonidoPanel.SetActive(true);
+    }
+
+    void QuitSonido()
+    {
+        sonidoPanel.SetActive(false);
+    }
+
+    public void OnMusicVolumeChange(float volume)
+    {
+        mainAudioMixer.SetFloat("musicVolume", volume);
+    }
+
+    public void OnSFxVolumeChange(float volume)
+    {
+        mainAudioMixer.SetFloat("SFxVolume", volume);
+    }
+
+    public void OnAmbientalVolumeChange(float volume)
+    {
+        mainAudioMixer.SetFloat("ambientalVolume", volume);
+    }
+
     void ShowControles()
     {
         controlesPanel.SetActive(true);
@@ -399,6 +447,7 @@ public class HUDContoller : MonoBehaviour
         pausaPanel.SetActive(false);
         optionsPanel.SetActive(false);
         advertenciaPanel.SetActive(false);
+        sonidoPanel.SetActive(false);
         controlesPanel.SetActive(false);
     }
 
