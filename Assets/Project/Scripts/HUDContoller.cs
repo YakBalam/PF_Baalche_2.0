@@ -57,7 +57,7 @@ public class HUDContoller : MonoBehaviour
         menuPower = false;
         
         // Menu de Pausa
-        continuarButton.onClick.AddListener(ShowHUD);
+        continuarButton.onClick.AddListener(QuitPausa);
         opcionesButton.onClick.AddListener(ShowOpciones);
         salirButton.onClick.AddListener(ShowAdvertencia);
 
@@ -350,6 +350,12 @@ public class HUDContoller : MonoBehaviour
         pausaPanel.SetActive(true);
     }
 
+    void QuitPausa()
+    {
+        borrosoPanel.SetActive(false);
+        pausaPanel.SetActive(false);
+    }
+
     void ShowOpciones()
     {
         optionsPanel.SetActive(true);
@@ -403,8 +409,11 @@ public class HUDContoller : MonoBehaviour
         // Menu Pausa
         if(Input.GetKeyDown(KeyCode.P))
         {
-            SoundFxManager.Instance.ShowMenuPausa();
-            ShowPausa();
+            if (pausaPanel.activeSelf == false)
+            {
+                SoundFxManager.Instance.ShowMenuPausa();
+                ShowPausa();
+            }
         }
 
         // Menu Poderes

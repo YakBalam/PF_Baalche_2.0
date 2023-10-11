@@ -10,6 +10,7 @@ public class ThirdPersonController : MonoBehaviour
     public CinemachineFreeLook camara;
     public GameObject machete;
 
+    private GameObject item;
     private bool flagDeath;
 
     private float timeMachete;
@@ -25,6 +26,7 @@ public class ThirdPersonController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Recibir Daño
         if (other.gameObject.tag == "HitEnemy" && flagDeath == false)
         {
             playerAnimator.SetTrigger("damage");
@@ -54,6 +56,22 @@ public class ThirdPersonController : MonoBehaviour
                 }
             }
 
+        }
+
+        // Recoger Item
+        if (other.gameObject.tag == "Item")
+        {
+            item = other.gameObject;
+            item.GetComponentInChildren<Canvas>().enabled = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.transform == item.transform)
+        {
+            item.GetComponentInChildren<Canvas>().enabled = false;
+            item =null;
         }
     }
 
@@ -152,6 +170,17 @@ public class ThirdPersonController : MonoBehaviour
                 // Saltar/esquivar
                 playerAnimator.SetTrigger("saltar");
             }
+
+            // Recoger item
+            if(Input.GetKeyDown(KeyCode.C))
+            {
+                if(item != null && Vector3.Distance(transform.position,item.transform.position) <= 1.5f)
+                {
+                    playerAnimator.SetTrigger("item");
+                    ItemDestroy();
+                    item =null;
+                }
+            }
         }
 
         // Si pasan 15 segundos sin atacar con el machete, este desaparecera
@@ -171,5 +200,11 @@ public class ThirdPersonController : MonoBehaviour
     public void DisableColliderMachete()
     {
         machete.GetComponent<CapsuleCollider>().enabled = false;
+    }
+
+    public void ItemDestroy()
+    {
+        Destroy(item, 2.5f);
+        item = null;
     }
 }

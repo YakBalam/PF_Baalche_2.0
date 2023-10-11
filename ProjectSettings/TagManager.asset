@@ -8,6 +8,7 @@ TagManager:
   - MachetePesado
   - HitEnemy
   - Coyote
+  - Item
   layers:
   - Default
   - TransparentFX
