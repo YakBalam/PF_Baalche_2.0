@@ -41,7 +41,7 @@ public class CoyoteController : MonoBehaviour
     private float speedChase = 6f;
     private float speedRunAttack = 7f;
 
-    private float vidaMax = 100;
+    private float vidaMax = 10;
     private float vidaActual;
     private float damageMacheteL;
     private float damageMacheteP;
@@ -63,7 +63,7 @@ public class CoyoteController : MonoBehaviour
         damageMacheteP = 12f;
 
         currentState = CoyoteState.NONE;
-        ChangeState(CoyoteState.PATROL);
+        //ChangeState(CoyoteState.PATROL);
         //ChangeState(CoyoteState.TEST);
     }
 
@@ -203,12 +203,12 @@ public class CoyoteController : MonoBehaviour
 
     public void EnableColliderHocico()
     {
-        hocico.GetComponent<CapsuleCollider>().enabled = true;
+        hocico.GetComponent<SphereCollider>().enabled = true;
     }
 
     public void DisableColliderHocico()
     {
-        hocico.GetComponent<CapsuleCollider>().enabled = false;
+        hocico.GetComponent<SphereCollider>().enabled = false;
     }
 
     void FixedUpdate()

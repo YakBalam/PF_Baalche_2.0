@@ -151,7 +151,7 @@ public class HUDContoller : MonoBehaviour
             playerData.raciones = 3;
             playerData.racionesMax = 5;
             playerData.poderActivo = 0;
-            playerData.vida = 40f;
+            playerData.vida = 200f;
             playerData.vidaMax = 200f;
             playerData.racion = 20f;
             playerData.ataqueLigero = 10;
@@ -460,6 +460,7 @@ public class HUDContoller : MonoBehaviour
         {
             if (pausaPanel.activeSelf == false)
             {
+                Debug.Log("Pausa");
                 SoundFxManager.Instance.ShowMenuPausa();
                 ShowPausa();
             }

@@ -9,6 +9,10 @@ TagManager:
   - HitEnemy
   - Coyote
   - Item
+  - Boton
+  - Ahuizotl
+  - HitAhuizotl
+  - Tornado
   layers:
   - Default
   - TransparentFX

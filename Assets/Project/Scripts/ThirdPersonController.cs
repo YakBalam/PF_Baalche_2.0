@@ -59,7 +59,25 @@ public class ThirdPersonController : MonoBehaviour
                     }
                 }
             }
+        }
 
+        // Ahuizotl
+        if (other.gameObject.tag == "HitAhuizotl")
+        {
+            Vector3 forceDirection = transform.up + other.transform.forward;
+            forceDirection.Normalize();
+            transform.gameObject.GetComponent<Rigidbody>().AddForce(forceDirection * 5f, ForceMode.Impulse);
+            if (playerData.vida - 20f < 0)
+            {
+                playerData.vida = 0f;
+                flagDeath = true;
+                playerAnimator.SetBool("death", true);
+            }
+            else
+            {
+                playerAnimator.SetTrigger("damage");
+                playerData.vida -= 20f;
+            }
         }
 
         // Recoger Item
@@ -72,10 +90,28 @@ public class ThirdPersonController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.transform == item.transform)
+        if (other.gameObject.tag == item.tag)
         {
             item.GetComponentInChildren<Canvas>().enabled = false;
             item =null;
+        }
+    }
+
+    private void OnParticleCollision(GameObject other)
+    {
+        if (other.tag == "Tornado")
+        {
+            if (playerData.vida - 1f < 0)
+            {
+                playerData.vida = 0f;
+                flagDeath = true;
+                playerAnimator.SetBool("death", true);
+            }
+            else
+            {
+                playerAnimator.SetTrigger("damage");
+                playerData.vida -= 1f;
+            }
         }
     }
 
@@ -182,7 +218,6 @@ public class ThirdPersonController : MonoBehaviour
                 {
                     playerAnimator.SetTrigger("item");
                     ItemDestroy();
-                    item =null;
                 }
             }
         }
