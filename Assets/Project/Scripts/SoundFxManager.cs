@@ -40,6 +40,10 @@ public class SoundFxManager : MonoBehaviour
     {
         sfxAudioSource.PlayOneShot(sFXClips[5]);
     }
+    public void NohekDamage()
+    {
+        sfxAudioSource.PlayOneShot(sFXClips[8]);
+    }
 
     // Menu Poder
     public void ShowMenuPower()

@@ -8,6 +8,8 @@ public class AhuizotlAttackBehaviour : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         animator.GetComponent<AhuizotlController>().ActiveTagAttack();
+        SoundLoopBoss.Instance.BossRespiraOff();
+        SoundShootBoss.Instance.Attack();
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -20,6 +22,7 @@ public class AhuizotlAttackBehaviour : StateMachineBehaviour
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         animator.GetComponent<AhuizotlController>().DisableTagAttack();
+        SoundLoopBoss.Instance.BossRespiraOn();
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

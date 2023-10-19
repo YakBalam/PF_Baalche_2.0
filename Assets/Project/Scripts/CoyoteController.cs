@@ -12,8 +12,10 @@ public class CoyoteController : MonoBehaviour
 {
     public Vector2 destinationArea;
     public Rigidbody coyoteRigidBody;
-    public GameObject hocico;
+    public GameObject hocicoTrigger;
+    public GameObject sangreFx;
     public Image barraVida;
+    public PlayerData playerData;
 
     private Animator enemyController;
     private NavMeshAgent agent;
@@ -49,6 +51,7 @@ public class CoyoteController : MonoBehaviour
     private bool damageFlag;
     private bool muerteFlag;
     private bool banderaEstado = false;
+    private bool activeIdle = false;
 
     void Start()
     {
@@ -59,31 +62,34 @@ public class CoyoteController : MonoBehaviour
         damageFlag = false;
         vidaActual = vidaMax;
         barraVida.fillAmount = 1;
-        damageMacheteL = 8f;
-        damageMacheteP = 12f;
+        damageMacheteL = playerData.ataqueLigero;
+        damageMacheteP = playerData.ataquePesado;
 
         currentState = CoyoteState.NONE;
-        //ChangeState(CoyoteState.PATROL);
-        //ChangeState(CoyoteState.TEST);
+        ChangeState(CoyoteState.PATROL);
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "MacheteLigero")
         {
+            Destroy(Instantiate(sangreFx, transform.position, Quaternion.identity), 1f);
             vidaActual -= damageMacheteL;
             damageFlag = true;
             Debug.Log("Coyote: " + vidaActual);
             Debug.Log("Ligero.");
             barraVida.fillAmount -= damageMacheteL / vidaMax;
+            SoundsEnemy.Instance.Damage();
         }
         else if (other.gameObject.tag == "MachetePesado")
         {
+            Destroy(Instantiate(sangreFx, transform.position, Quaternion.identity), 1f);
             vidaActual -= damageMacheteL;
             damageFlag = true;
             Debug.Log("Coyote: " + vidaActual);
             Debug.Log("Pesado.");
             barraVida.fillAmount -= damageMacheteP / vidaMax;
+            SoundsEnemy.Instance.Damage();
         }
     }
 
@@ -146,9 +152,6 @@ public class CoyoteController : MonoBehaviour
             case CoyoteState.DEATH:
                 currentState = newState;
                 break;
-            case CoyoteState.TEST:
-                //StartCoroutine("SeePlayer");
-                break;
         }
     }
      
@@ -203,12 +206,12 @@ public class CoyoteController : MonoBehaviour
 
     public void EnableColliderHocico()
     {
-        hocico.GetComponent<SphereCollider>().enabled = true;
+        hocicoTrigger.GetComponent<SphereCollider>().enabled = true;
     }
 
     public void DisableColliderHocico()
     {
-        hocico.GetComponent<SphereCollider>().enabled = false;
+        hocicoTrigger.GetComponent<SphereCollider>().enabled = false;
     }
 
     void FixedUpdate()
@@ -444,16 +447,11 @@ public class CoyoteController : MonoBehaviour
                 if (muerteFlag == false)
                 {
                     muerteFlag = true;
+                    SoundsEnemy.Instance.Death();
                     Debug.Log("Muerte");
                     enemyController.SetTrigger("die");
                     Destroy(gameObject, 10f);
                 }
-                break;
-
-            case CoyoteState.TEST:
-                agent.speed = speedIdle;
-
-
                 break;
 
         }
@@ -473,7 +471,5 @@ public enum CoyoteState
     ESCAPE,
     
     DAMAGE,
-    DEATH,
-
-    TEST
+    DEATH
 }

@@ -3,19 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using System;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
+[System.Serializable]
 public class ThirdPersonController : MonoBehaviour
 {
     public PlayerData playerData;
     private Animator playerAnimator;
     public CinemachineFreeLook camara;
     public GameObject machete;
+    public GameObject sangreFx;
 
     public GameObject mainPausaPanel;
     public GameObject mainPoderPanel;
 
+    public UnityEvent startIntroBossEvent;
+    public UnityEvent endIntroBossEvent;
+    public UnityEvent recogerItemEvent;
+
     private GameObject item;
     private bool flagDeath;
+    private bool flagReinicio;
 
     private float timeMachete;
 
@@ -26,14 +35,18 @@ public class ThirdPersonController : MonoBehaviour
         timeMachete = 0f;
         machete.SetActive(false);
         flagDeath = false;
+        flagReinicio = false;
     }
+
 
     private void OnTriggerEnter(Collider other)
     {
         // Recibir Daño
         if (other.gameObject.tag == "HitEnemy" && flagDeath == false)
         {
-            playerAnimator.SetTrigger("damage");
+            Destroy(Instantiate(sangreFx, transform.position, Quaternion.identity), 1f);
+            SoundFxManager.Instance.NohekDamage();
+            
             Debug.Log("Flag_1");
             Transform golpeTransform = other.GetComponent<Transform>();
             GameObject enemy;
@@ -43,7 +56,7 @@ public class ThirdPersonController : MonoBehaviour
                 enemy = golpeTransform.parent.parent.gameObject;
                 string enemyTag = enemy.tag;
 
-                // Solo se recibira daño si el atacante es el jugador
+                
                 if (enemyTag == "Coyote")
                 {
                     Debug.Log("Flag_3");
@@ -51,11 +64,12 @@ public class ThirdPersonController : MonoBehaviour
                     {
                         playerData.vida = 0f;
                         flagDeath = true;
-                        playerAnimator.SetBool("death", true);
+                        playerAnimator.SetTrigger("dead");
                     }
                     else
                     {
                         playerData.vida -= 16f;
+                        playerAnimator.SetTrigger("damage");
                     }
                 }
             }
@@ -64,6 +78,8 @@ public class ThirdPersonController : MonoBehaviour
         // Ahuizotl
         if (other.gameObject.tag == "HitAhuizotl")
         {
+            Destroy(Instantiate(sangreFx, transform.position, Quaternion.identity), 1f);
+            SoundFxManager.Instance.NohekDamage();
             Vector3 forceDirection = transform.up + other.transform.forward;
             forceDirection.Normalize();
             transform.gameObject.GetComponent<Rigidbody>().AddForce(forceDirection * 5f, ForceMode.Impulse);
@@ -71,7 +87,7 @@ public class ThirdPersonController : MonoBehaviour
             {
                 playerData.vida = 0f;
                 flagDeath = true;
-                playerAnimator.SetBool("death", true);
+                playerAnimator.SetTrigger("dead");
             }
             else
             {
@@ -85,6 +101,14 @@ public class ThirdPersonController : MonoBehaviour
         {
             item = other.gameObject;
             item.GetComponentInChildren<Canvas>().enabled = true;
+        }
+
+        if(other.gameObject.tag == "Agua")
+        {
+            SoundFxManager.Instance.NohekDamage();
+            playerData.vida = 0f;
+            flagDeath = true;
+            playerAnimator.SetTrigger("dead");
         }
     }
 
@@ -101,11 +125,14 @@ public class ThirdPersonController : MonoBehaviour
     {
         if (other.tag == "Tornado")
         {
+            if (playerData.vida > 0)
+                SoundFxManager.Instance.NohekDamage();
+
             if (playerData.vida - 1f < 0)
             {
                 playerData.vida = 0f;
                 flagDeath = true;
-                playerAnimator.SetBool("death", true);
+                playerAnimator.SetTrigger("dead");
             }
             else
             {
@@ -113,6 +140,11 @@ public class ThirdPersonController : MonoBehaviour
                 playerData.vida -= 1f;
             }
         }
+    }
+
+    private void ReiniciarLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     // Update is called once per frame
@@ -217,8 +249,15 @@ public class ThirdPersonController : MonoBehaviour
                 if(item != null && Vector3.Distance(transform.position,item.transform.position) <= 1.5f)
                 {
                     playerAnimator.SetTrigger("item");
+                    recogerItemEvent.Invoke();
                     ItemDestroy();
                 }
+            }
+
+            if(flagDeath==true && flagReinicio==false)
+            {
+                flagReinicio = true;
+                Invoke("ReiniciarLevel", 8f);
             }
         }
 

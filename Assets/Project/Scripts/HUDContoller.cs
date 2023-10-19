@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.Audio;
+using UnityEngine.Events;
 
 public class HUDContoller : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class HUDContoller : MonoBehaviour
     public GameObject advertenciaPanel;
     public GameObject sonidoPanel;
     public GameObject controlesPanel;
+    public GameObject vidaBossPanel;
 
     public Image vida;
     
@@ -66,7 +68,11 @@ public class HUDContoller : MonoBehaviour
     {
         CargaDatos();
         CleanPanels();
-        ShowHUD();        
+        int indiceEscenaActual = SceneManager.GetActiveScene().buildIndex;
+        if (indiceEscenaActual != 1)
+        {
+            ShowHUD();
+        }
         menuPower = false;
         
         // Menu de Pausa
@@ -154,8 +160,8 @@ public class HUDContoller : MonoBehaviour
             playerData.vida = 200f;
             playerData.vidaMax = 200f;
             playerData.racion = 20f;
-            playerData.ataqueLigero = 10;
-            playerData.ataquePesado = 15;
+            playerData.ataqueLigero = 8;
+            playerData.ataquePesado = 12;
             playerData.poder = 5;
 }
     }
@@ -200,7 +206,7 @@ public class HUDContoller : MonoBehaviour
         racionesText.text = "x" + playerData.raciones.ToString();
     }
 
-    void NewRacion()
+    public void NewRacion()
     {
         playerData.raciones = playerData.raciones + 1;
         ShowRaciones();
@@ -438,7 +444,27 @@ public class HUDContoller : MonoBehaviour
     {
         SceneManager.LoadScene(0);
     }
-    
+
+    void ShowBossLife()
+    {
+        vidaBossPanel.SetActive(true);
+    }
+
+    void QuitBossLife()
+    {
+        vidaBossPanel.SetActive(false);
+    }
+
+    public void StartIntroBoss()
+    {
+        CleanPanels();
+    }
+    public void EndIntroBoss()
+    {
+        ShowHUD();
+        ShowBossLife();
+    }
+
     void CleanPanels ()
     {
         HUDPanel.SetActive(false);
@@ -449,6 +475,7 @@ public class HUDContoller : MonoBehaviour
         advertenciaPanel.SetActive(false);
         sonidoPanel.SetActive(false);
         controlesPanel.SetActive(false);
+        vidaBossPanel.SetActive(false);
     }
 
 

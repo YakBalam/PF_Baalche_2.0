@@ -13,6 +13,7 @@ TagManager:
   - Ahuizotl
   - HitAhuizotl
   - Tornado
+  - Agua
   layers:
   - Default
   - TransparentFX

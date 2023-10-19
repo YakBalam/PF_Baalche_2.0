@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-
+[System.Serializable]
 public class AhuizotlController : MonoBehaviour
 {
     public Image barraVida;
     public GameObject pataFD;
     public GameObject manoFD;
     public GameObject tornado;
+    public GameObject sangreFx;
 
     private Animator bossController;
     private NavMeshAgent agent;
@@ -38,11 +39,14 @@ public class AhuizotlController : MonoBehaviour
     private bool powerB;
     private Vector3 destinoPowerV = new Vector3 (-160.50f, 10.80f, 66.29f);
     private bool attackBool;
+    private bool muerteFlag = false;
 
     private float vidaMax = 500;
     private float vidaActual;
     private float damageMacheteL;
     private float damageMacheteP;
+
+    private bool activeIdle;
 
     void Start()
     {
@@ -60,19 +64,26 @@ public class AhuizotlController : MonoBehaviour
         damageMacheteL = 8f;
         damageMacheteP = 12f;
 
+        activeIdle = false;
         currentState = AhuizotlState.NONE;
-        ChangeState(AhuizotlState.IDLE);
+        SoundLoopBoss.Instance.BossRespiraOn();
+
+        //ChangeState(AhuizotlState.IDLE);
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "MacheteLigero")
         {
+            Destroy(Instantiate(sangreFx, transform.position, Quaternion.identity), 1f);
+            SoundShootBoss.Instance.Damage();
             vidaActual -= damageMacheteL;
             barraVida.fillAmount -= damageMacheteL / vidaMax;
         }
         else if (other.gameObject.tag == "MachetePesado")
         {
+            Destroy(Instantiate(sangreFx, transform.position, Quaternion.identity), 1f);
+            SoundShootBoss.Instance.Damage();
             vidaActual -= damageMacheteL;
             barraVida.fillAmount -= damageMacheteP / vidaMax;
         }
@@ -132,6 +143,12 @@ public class AhuizotlController : MonoBehaviour
                 timeAttack = 1.5f;
                 currentState = newState;
                 break;
+            case AhuizotlState.DEAD:
+                StopAllCoroutines();
+                agent.SetDestination(transform.position);
+                currentState = newState;
+                break;
+                
         }
     }
 
@@ -174,6 +191,11 @@ public class AhuizotlController : MonoBehaviour
         manoFD.tag = "Ahuizotl";
     }
 
+    public void ActiveBoss()
+    {
+        activeIdle = true;
+    }
+
     void FixedUpdate()
     {
         switch (currentState)
@@ -182,7 +204,9 @@ public class AhuizotlController : MonoBehaviour
                 sqDistance2Player = (playerTransform.position - transform.position).sqrMagnitude;
                 Debug.Log("DistancaIdle: "+sqDistance2Player);
                 timeIdle -= Time.fixedDeltaTime;
-                if(timeIdle <= 0)
+                if (vidaActual <= 0)
+                    ChangeState(AhuizotlState.DEAD);
+                if (timeIdle <= 0)
                 {
                     if (sqDistance2Player <= distanceIdleToAttack)
                     {
@@ -209,12 +233,17 @@ public class AhuizotlController : MonoBehaviour
             case AhuizotlState.TWOATTACK:
                 Debug.Log("DistancaTwoAttack: " + sqDistance2Player);
                 bossController.SetTrigger("attack");
-                ChangeState(AhuizotlState.IDLE);
+                if (vidaActual <= 0)
+                    ChangeState(AhuizotlState.DEAD);
+                else
+                    ChangeState(AhuizotlState.IDLE);
                 break;
             case AhuizotlState.CHASE:
                 Debug.Log("DistancaChase: " + sqDistance2Player);
                 sqDistance2Player = (playerTransform.position - transform.position).sqrMagnitude;
                 timeChase-= Time.fixedDeltaTime;
+                if (vidaActual <= 0)
+                    ChangeState(AhuizotlState.DEAD);
                 if (sqDistance2Player <= distanceChaseToAttack)
                 {
                     ChangeState(AhuizotlState.TWOATTACK);
@@ -227,6 +256,8 @@ public class AhuizotlController : MonoBehaviour
             case AhuizotlState.POWER:
                 
                 Debug.Log("DistancaPower: " + sqDistance2Player);
+                if (vidaActual <= 0)
+                    ChangeState(AhuizotlState.DEAD);
 
                 if (agent.velocity.sqrMagnitude <= 1 && seePlayerBool == false)
                 {
@@ -267,6 +298,9 @@ public class AhuizotlController : MonoBehaviour
 
             case AhuizotlState.RUN:
                 Debug.Log("DistancaRun: " + sqDistance2Player);
+                if (vidaActual <= 0)
+                    ChangeState(AhuizotlState.DEAD);
+
                 timeRun -= Time.fixedDeltaTime;
                 sqDistance2Player = (playerTransform.position - transform.position).sqrMagnitude;
                 if (timeRun <= 0 || sqDistance2Player <= distanceRunToAtack)
@@ -276,6 +310,8 @@ public class AhuizotlController : MonoBehaviour
                 break;
             case AhuizotlState.ATTACK:
                 Debug.Log("DistancaAttack: " + sqDistance2Player);
+                if (vidaActual <= 0)
+                    ChangeState(AhuizotlState.DEAD);
                 if (attackBool == false)
                 {
                     bossController.SetTrigger("attack");
@@ -286,6 +322,21 @@ public class AhuizotlController : MonoBehaviour
                 if (timeAttack <= 0)
                 {
                     ChangeState(AhuizotlState.IDLE);
+                }
+                break;
+            case AhuizotlState.NONE:
+                if(activeIdle==true)
+                {
+                    ChangeState(AhuizotlState.IDLE);
+                }
+                break;
+            case AhuizotlState.DEAD:
+                if(muerteFlag == false)
+                {
+                    SoundShootBoss.Instance.Death();
+                    muerteFlag = true;
+                    bossController.SetTrigger("dead");
+                    Destroy(gameObject, 8f);
                 }
                 break;
         }
@@ -302,5 +353,6 @@ public enum AhuizotlState
     RUN,
     ATTACK,
     TWOATTACK,
-    POWER
+    POWER,
+    DEAD
 }
