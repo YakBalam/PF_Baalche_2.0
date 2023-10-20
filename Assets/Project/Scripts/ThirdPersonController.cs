@@ -47,19 +47,16 @@ public class ThirdPersonController : MonoBehaviour
             Destroy(Instantiate(sangreFx, transform.position, Quaternion.identity), 1f);
             SoundFxManager.Instance.NohekDamage();
             
-            Debug.Log("Flag_1");
             Transform golpeTransform = other.GetComponent<Transform>();
             GameObject enemy;
             if (golpeTransform != null && golpeTransform.parent.parent != null)
             {
-                Debug.Log("Flag_2");
                 enemy = golpeTransform.parent.parent.gameObject;
                 string enemyTag = enemy.tag;
 
                 
                 if (enemyTag == "Coyote")
                 {
-                    Debug.Log("Flag_3");
                     if (playerData.vida - 16f < 0)
                     {
                         playerData.vida = 0f;
@@ -205,22 +202,6 @@ public class ThirdPersonController : MonoBehaviour
             {
                 playerAnimator.SetBool("rapido", !playerAnimator.GetBool("rapido"));
             }
-
-
-
-            // Esquivar
-            //if(Input.GetKeyDown(KeyCode.A))
-            //{
-            //    playerAnimator.SetFloat("directionEsquivar", -1f);
-            //}
-            //else if (Input.GetKeyDown(KeyCode.D))
-            //{
-            //    playerAnimator.SetFloat("directionEsquivar", 1f);
-            //}
-            //else
-            //{
-            //    playerAnimator.SetFloat("directionEsquivar", 0f);
-            //}
 
             // Esquivar/saltar
             if (Input.GetKeyDown(KeyCode.Space))

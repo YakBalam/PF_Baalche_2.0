@@ -43,9 +43,9 @@ public class MainMenu : MonoBehaviour
         sonidoButton.onClick.AddListener(ShowSonido);
         creditsButton.onClick.AddListener(ShowCreditsPanel);
         controlButton.onClick.AddListener(ShowControlPanel);
-        backFromOptionsButton.onClick.AddListener(ShowMainPanel);
-        backFromCreditsButton.onClick.AddListener(ShowMainPanel);
-        backFromControlButton.onClick.AddListener(ShowOptionsPanel);
+        backFromOptionsButton.onClick.AddListener(QuitOptionsPanel);
+        backFromCreditsButton.onClick.AddListener(QuitCreditsPanel);
+        backFromControlButton.onClick.AddListener(QuitControlPanel);
         ShowMainPanel();
 
         //Menu Sonido
@@ -60,32 +60,46 @@ public class MainMenu : MonoBehaviour
 
     public void ShowOptionsPanel()
     {
-        CleanPanels();
         optionsPanel.SetActive(true);
+        SoundFxManager.Instance.ShowMenuPausa();
+    }
+    void QuitOptionsPanel()
+    {
+        optionsPanel.SetActive(false);
         SoundFxManager.Instance.ShowMenuPausa();
     }
 
     void ShowSonido()
     {
         sonidoPanel.SetActive(true);
+        SoundFxManager.Instance.ShowMenuPausa();
     }
 
     void QuitSonido()
     {
         sonidoPanel.SetActive(false);
+        SoundFxManager.Instance.ShowMenuPausa();
     }
 
     public void ShowControlPanel()
     {
-        CleanPanels();
         controlPanel.SetActive(true);
+        SoundFxManager.Instance.ShowMenuPausa();
+    }
+    public void QuitControlPanel()
+    {
+        controlPanel.SetActive(false);
         SoundFxManager.Instance.ShowMenuPausa();
     }
 
     public void ShowCreditsPanel()
     {
-        CleanPanels();
         creditsPanel.SetActive(true);
+        SoundFxManager.Instance.ShowMenuPausa();
+    }
+    public void QuitCreditsPanel()
+    {
+        creditsPanel.SetActive(false);
         SoundFxManager.Instance.ShowMenuPausa();
     }
 

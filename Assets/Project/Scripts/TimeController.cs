@@ -7,10 +7,6 @@ public class TimeController : MonoBehaviour
     public GameObject mainPausaPanel;
     public GameObject mainPoderPanel;
 
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()

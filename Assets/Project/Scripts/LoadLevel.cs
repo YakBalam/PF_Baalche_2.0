@@ -19,7 +19,6 @@ public class LoadLevel : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             canvas.enabled = true;
-            Debug.Log("Jugador detectado");
             flag = true;
         }
     }
@@ -29,7 +28,6 @@ public class LoadLevel : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             canvas.enabled = false;
-            Debug.Log("Salio");
             flag = false;
         }
     }
@@ -40,7 +38,6 @@ public class LoadLevel : MonoBehaviour
         {
             if(Input.GetKeyUp(KeyCode.C))
             {
-                Debug.Log("Cargando nivel");
                 CargarEscena(sceneX);
             }
         }

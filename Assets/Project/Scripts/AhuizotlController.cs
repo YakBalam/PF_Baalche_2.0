@@ -202,7 +202,6 @@ public class AhuizotlController : MonoBehaviour
         {
             case AhuizotlState.IDLE:
                 sqDistance2Player = (playerTransform.position - transform.position).sqrMagnitude;
-                Debug.Log("DistancaIdle: "+sqDistance2Player);
                 timeIdle -= Time.fixedDeltaTime;
                 if (vidaActual <= 0)
                     ChangeState(AhuizotlState.DEAD);
@@ -231,7 +230,6 @@ public class AhuizotlController : MonoBehaviour
                 }
                 break;
             case AhuizotlState.TWOATTACK:
-                Debug.Log("DistancaTwoAttack: " + sqDistance2Player);
                 bossController.SetTrigger("attack");
                 if (vidaActual <= 0)
                     ChangeState(AhuizotlState.DEAD);
@@ -239,7 +237,6 @@ public class AhuizotlController : MonoBehaviour
                     ChangeState(AhuizotlState.IDLE);
                 break;
             case AhuizotlState.CHASE:
-                Debug.Log("DistancaChase: " + sqDistance2Player);
                 sqDistance2Player = (playerTransform.position - transform.position).sqrMagnitude;
                 timeChase-= Time.fixedDeltaTime;
                 if (vidaActual <= 0)
@@ -255,7 +252,6 @@ public class AhuizotlController : MonoBehaviour
                 break;
             case AhuizotlState.POWER:
                 
-                Debug.Log("DistancaPower: " + sqDistance2Player);
                 if (vidaActual <= 0)
                     ChangeState(AhuizotlState.DEAD);
 
@@ -297,7 +293,6 @@ public class AhuizotlController : MonoBehaviour
                 break;
 
             case AhuizotlState.RUN:
-                Debug.Log("DistancaRun: " + sqDistance2Player);
                 if (vidaActual <= 0)
                     ChangeState(AhuizotlState.DEAD);
 
@@ -309,7 +304,6 @@ public class AhuizotlController : MonoBehaviour
                 }
                 break;
             case AhuizotlState.ATTACK:
-                Debug.Log("DistancaAttack: " + sqDistance2Player);
                 if (vidaActual <= 0)
                     ChangeState(AhuizotlState.DEAD);
                 if (attackBool == false)

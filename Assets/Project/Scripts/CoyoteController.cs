@@ -1,12 +1,7 @@
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
-using static UnityEditor.Rendering.InspectorCurveEditor;
 
 public class CoyoteController : MonoBehaviour
 {
@@ -76,8 +71,6 @@ public class CoyoteController : MonoBehaviour
             Destroy(Instantiate(sangreFx, transform.position, Quaternion.identity), 1f);
             vidaActual -= damageMacheteL;
             damageFlag = true;
-            Debug.Log("Coyote: " + vidaActual);
-            Debug.Log("Ligero.");
             barraVida.fillAmount -= damageMacheteL / vidaMax;
             SoundsEnemy.Instance.Damage();
         }
@@ -86,8 +79,6 @@ public class CoyoteController : MonoBehaviour
             Destroy(Instantiate(sangreFx, transform.position, Quaternion.identity), 1f);
             vidaActual -= damageMacheteL;
             damageFlag = true;
-            Debug.Log("Coyote: " + vidaActual);
-            Debug.Log("Pesado.");
             barraVida.fillAmount -= damageMacheteP / vidaMax;
             SoundsEnemy.Instance.Damage();
         }
@@ -222,7 +213,6 @@ public class CoyoteController : MonoBehaviour
                 if (!banderaEstado)
                 {
                     banderaEstado = true;
-                    Debug.Log("PATROL");
                 }
                 if (agent.speed != speedPatrol)
                 {
@@ -250,7 +240,6 @@ public class CoyoteController : MonoBehaviour
                 if (!banderaEstado)
                 {
                     banderaEstado = true;
-                    Debug.Log("CHASE");
                 }
                 if (agent.speed != speedChase)
                 {
@@ -284,7 +273,6 @@ public class CoyoteController : MonoBehaviour
                 if (!banderaEstado)
                 {
                     banderaEstado = true;
-                    Debug.Log("IDLE ATTACK");
                     //agent.SetDestination(transform.position);
                 }
                 if (agent.speed != speedIdle)
@@ -329,7 +317,6 @@ public class CoyoteController : MonoBehaviour
                 if (!banderaEstado)
                 {
                     banderaEstado = true;
-                    Debug.Log("RUN ATTACK");
                 }
                 if (agent.speed != speedRunAttack)
                 {
@@ -363,7 +350,6 @@ public class CoyoteController : MonoBehaviour
                 if (!banderaEstado)
                 {
                     banderaEstado = true;
-                    Debug.Log("ATTACK");
                 }
                 if (vidaActual <= 0)
                     ChangeState(CoyoteState.DEATH);
@@ -404,7 +390,6 @@ public class CoyoteController : MonoBehaviour
                 if (!banderaEstado)
                 {
                     banderaEstado = true;
-                    Debug.Log("ESCAPE: " + escapePoint);
                 }
                 if (agent.speed != speedChase)
                 {
@@ -428,7 +413,6 @@ public class CoyoteController : MonoBehaviour
                     timeIdle = 5f;
                     timeEscape = 4f;
                     ChangeState(CoyoteState.IDLEATTACK);
-                    Debug.Log("pointCoyote: " + transform.position);
                 }
                 //Debug.Log("timeEscape: " + timeEscape);
                 break;
@@ -448,7 +432,6 @@ public class CoyoteController : MonoBehaviour
                 {
                     muerteFlag = true;
                     SoundsEnemy.Instance.Death();
-                    Debug.Log("Muerte");
                     enemyController.SetTrigger("die");
                     Destroy(gameObject, 10f);
                 }
