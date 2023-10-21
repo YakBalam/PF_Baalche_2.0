@@ -80082,7 +80082,7 @@ PrefabInstance:
     - target: {fileID: 7015217083725390566, guid: d75a500d21d0c7a41a49177b93753eed,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.008320263
+      value: 0.008320259
       objectReference: {fileID: 0}
     - target: {fileID: 8585143322060311690, guid: d75a500d21d0c7a41a49177b93753eed,
         type: 3}
